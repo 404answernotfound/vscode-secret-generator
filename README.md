@@ -20,6 +20,8 @@
 code .
 ```
 
+Right click anywhere on your VSCode editor workspace and if the extension is active, find "Generate .env" and "Generate Secret" on the menu
+
 ## Author
 
 👤 **404answernotfound**
