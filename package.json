@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vs-secret-generator.generateSecret"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,6 +18,10 @@
       {
         "command": "vs-secret-generator.generateSecret",
         "title": "Generate Secret"
+      },
+      {
+        "command": "vs-secret-generator.generateEnv",
+        "title": "Generate Env"
       }
     ],
     "menus": {
@@ -25,8 +29,27 @@
         {
           "command": "vs-secret-generator.generateSecret",
           "when": "editorFocus"
+        },
+        {
+          "command": "vs-secret-generator.generateEnv",
+          "when": "editorFocus"
         }
       ]
+    },
+    "configuration": {
+      "title": "SecretGenerator",
+      "properties": {
+        "SecretGenerator.startingSecret": {
+          "type": "string",
+          "default": "hello-world",
+          "description": "Specify starting secret to generate dynamic secrets from. Don't share this with anyone."
+        },
+        "SecretGenerator.startingLength": {
+          "type": "number",
+          "default": 100,
+          "description": "Specify starting length to generate dynamic secrets from."
+        }
+      }
     }
   },
   "scripts": {

@@ -1,15 +1,28 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import { config } from "process";
 import * as vscode from "vscode";
-
+import { generateSecret, generateSecretWithSalt } from "./utils";
+import path = require("path");
+import fs = require("fs");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
     'Congratulations, your extension "vs-secret-generator" is now active!'
   );
+
+  // Randomize secret
+  const configuration = vscode.workspace.getConfiguration("SecretGenerator");
+  configuration
+    .update(
+      "startingSecret",
+      generateSecret(),
+      vscode.ConfigurationTarget.Global
+    )
+    .then(() => {});
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -17,34 +30,48 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerTextEditorCommand(
     "vs-secret-generator.generateSecret",
     (editor, edit) => {
-      let text = generateSecret();
+      const salt = configuration.get("startingSecret");
+      const length = configuration.get("startingLength");
+      const text = generateSecretWithSalt(salt, length);
       edit.replace(editor.selection, text);
       vscode.window.showInformationMessage("Secret generated correctly");
     }
   );
 
-  vscode.commands.registerTextEditorCommand(
-    "intrexx-js-lib.start",
-    (editor, edit) => {
-      let text = "FooBar";
-      edit.replace(editor.selection, text);
+  let disposableEnv = vscode.commands.registerTextEditorCommand(
+    "vs-secret-generator.generateEnv",
+    (_editor, _edit) => {
+      if (vscode.workspace.rootPath) {
+        const salt = configuration.get("startingSecret");
+        const length = configuration.get("startingLength");
+        const text = generateSecretWithSalt(salt, length);
+        const secret = `SECRET=${text}`;
+        const filePath = path.join(vscode.workspace.rootPath, ".env");
+        fs.writeFileSync(filePath, secret, "utf8");
+
+        const openPath = vscode.Uri.file(filePath);
+        vscode.workspace.openTextDocument(openPath).then((doc) => {
+          vscode.window.showTextDocument(doc);
+        });
+        vscode.window.showInformationMessage(".env generated successfully");
+      }
+      // vscode.window.showInformationMessage(
+      //   "Created a new file: hello/world.md"
+      // );
     }
   );
 
+  // vscode.commands.registerTextEditorCommand(
+  //   "intrexx-js-lib.start",
+  //   (editor, edit) => {
+  //     let text = "FooBar";
+  //     edit.replace(editor.selection, text);
+  //   }
+  // );
+
   context.subscriptions.push(disposable);
+  context.subscriptions.push(disposableEnv);
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
-export function generateSecret() {
-  var chars =
-    "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var secretLength = 16;
-  var secret = "";
-  for (var i = 0; i <= secretLength; i++) {
-    var randomNumber = Math.floor(Math.random() * chars.length);
-    secret += chars.substring(randomNumber, randomNumber + 1);
-  }
-  return secret;
-}
