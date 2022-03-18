@@ -47,27 +47,24 @@ export function activate(context: vscode.ExtensionContext): void {
         const text = generateSecretWithSalt(salt, length);
         const secret = `SECRET=${text}`;
         const filePath = path.join(vscode.workspace.rootPath, ".env");
-        fs.writeFileSync(filePath, secret, "utf8");
 
-        const openPath = vscode.Uri.file(filePath);
-        vscode.workspace.openTextDocument(openPath).then((doc) => {
-          vscode.window.showTextDocument(doc);
-        });
-        vscode.window.showInformationMessage(".env generated successfully");
+        try {
+          if (fs.existsSync(filePath)) {
+            vscode.window.showInformationMessage(".env file already exists");
+            return;
+          }
+          fs.writeFileSync(filePath, secret, "utf8");
+          const openPath = vscode.Uri.file(filePath);
+          vscode.workspace.openTextDocument(openPath).then((doc) => {
+            vscode.window.showTextDocument(doc);
+          });
+          vscode.window.showInformationMessage(".env generated successfully");
+        } catch (err) {
+          console.error(err);
+        }
       }
-      // vscode.window.showInformationMessage(
-      //   "Created a new file: hello/world.md"
-      // );
     }
   );
-
-  // vscode.commands.registerTextEditorCommand(
-  //   "intrexx-js-lib.start",
-  //   (editor, edit) => {
-  //     let text = "FooBar";
-  //     edit.replace(editor.selection, text);
-  //   }
-  // );
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(disposableEnv);
