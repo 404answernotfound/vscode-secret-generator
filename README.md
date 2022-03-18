@@ -1,6 +1,6 @@
 <h1 align="center">VSCode Secret Generator 👋</h1>
 <p align="center">
-    <img alt="Gitpainter" src="public/vscodesecretgenerator.jpeg" width="300px" />
+    <img alt="Gitpainter" src="https://raw.githubusercontent.com/404answernotfound/vscode-secret-generator/main/public/vscodesecretgenerator.jpeg" width="300px" />
 </p>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />

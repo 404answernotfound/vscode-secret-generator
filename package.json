@@ -3,6 +3,8 @@
   "displayName": "VS Secret Generator",
   "description": "A VSCode extension to generate safe secrets to use in our process environment variables",
   "version": "0.0.1",
+  "publisher": "404answernotfound",
+  "repository": "https://github.com/404answernotfound/vscode-secret-generator",
   "engines": {
     "vscode": "^1.65.0"
   },
@@ -58,7 +60,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/vscode": "^1.65.0",
